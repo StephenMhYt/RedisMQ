@@ -45,11 +45,13 @@ public class RedisMQTopicMessageListenerContainer extends JedisPubSub implements
     }
 
     public void onSubscribe(String channel, int subscribedChannels) {
-        LOGGER.info("subscribe redis channel success, channel:{}, subscribedChannels:{}", channel, subscribedChannels);
+        JedisTemplate jedisTemplate = redisMQTopic.getJedisTemplate();
+        //记录订阅者+1
+        jedisTemplate.incr(RedisMQConstant.REDIS_SUB_NUM_REDIS_KEY_PREFIX+channel);
     }
 
     public void onUnsubscribe(String channel, int subscribedChannels) {
-        LOGGER.info("unsubscribe redis channel, channel:{}, subscribedChannels:{}", channel, subscribedChannels);
+        destroy();
     }
 
     @PostConstruct
@@ -66,8 +68,10 @@ public class RedisMQTopicMessageListenerContainer extends JedisPubSub implements
 
     @PreDestroy
     public void destroy(){
+        LOGGER.info("destroy container...");
         executor.shutdown();
         pool.shutdown();//shutdown()是已经提交的任务执行完毕后关闭，shutdownNow()是尚未执行的任务全部取消，正在执行的发出interrupt()
+        decrSub();
     }
 
     @Override
@@ -75,11 +79,18 @@ public class RedisMQTopicMessageListenerContainer extends JedisPubSub implements
         checkParam();
         JedisTemplate jedisTemplate = redisMQTopic.getJedisTemplate();
         String channel = redisMQTopic.getChannel();
-        //记录订阅者+1
-        jedisTemplate.incr(RedisMQConstant.REDIS_SUB_NUM_REDIS_KEY_PREFIX+channel);
         //由于redis的订阅方法subscribe是线程阻塞的，故另启一个线程订阅消息
         RedisMQTopicSubscribeThread thread = new RedisMQTopicSubscribeThread(this,channel,jedisTemplate);
         executor.execute(thread);
+    }
+
+    /**
+     * 订阅者数量减一
+     */
+    private void decrSub(){
+        JedisTemplate jedisTemplate = redisMQTopic.getJedisTemplate();
+        String channel = redisMQTopic.getChannel();
+        jedisTemplate.decr(RedisMQConstant.REDIS_SUB_NUM_REDIS_KEY_PREFIX+channel);
     }
 
     private void checkParam(){

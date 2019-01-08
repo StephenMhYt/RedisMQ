@@ -4,8 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="jedisFactory" class="cn.com.maoh.template.JedisFactory">
-        <property name="redisNodes" value="192.168.64.19:6379"/>
-        <property name="password" value="@asdfghjkl"/>
+        <property name="redisNodes" value="127.0.0.1:6379"/>
+        <property name="password" value="test"/>
         <property name="maxTotal" value="20"/>
     </bean>
 
@@ -20,7 +20,7 @@
         <property name="redisMQTopic" ref="redisMQTopic"/>
     </bean>
 
-    <bean id="redisPublisher" class="cn.com.maoh.producer.RedisSender" autowire="byType">
+    <bean id="redisPublisher" class="cn.com.maoh.producer.RedisSender">
         <property name="jedisTemplate" ref="jedisTemplate"/>
     </bean>
 

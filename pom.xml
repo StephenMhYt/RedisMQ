@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>cn.com.maoh</groupId>
-  <artifactId>redis.queue</artifactId>
+  <artifactId>redisMQ</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>redis.queue</name>
+  <name>RedisMQ</name>
   <url>http://maven.apache.org</url>
 
   <properties>
