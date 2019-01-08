@@ -21,7 +21,7 @@
     <log4j.version>1.2.17</log4j.version>
     <kryo.version>3.0.3</kryo.version>
     <guava.version>19.0-rc2</guava.version>
-    <jackson.version>2.6.7</jackson.version>
+    <jackson.version>[2.8.11.1,)</jackson.version>
   </properties>
 
   <dependencies>
